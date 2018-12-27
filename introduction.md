@@ -6,7 +6,7 @@ C#の大切な考え方として、クラスとインスタンスというもの
 A君にいたずらはできないけど人間と分類されてるもの自体にいたずらはできないよねって感じです
 それぞれ定義の仕方は以下
 
-```
+```csharp
 public class Human
 {
     // コンストラクタ
@@ -32,7 +32,8 @@ public static Main()
 配列を便利に扱えるクラスとして、Listクラスというものが存在する。
 Cだと配列の大きさなどを宣言時に決める必要があるが、Listには特にそんなことをする必要はなく追加削除を容易に使える
 使い方は簡単以下のようにインスタンスを作成するだけ！
-```
+
+```csharp
 var list = new List<string>{ "hoge1" };
 
 // 要素にhoge2を足す
@@ -42,13 +43,13 @@ list.Add("hoge2");
 list.Remove("hoge1");
 ```
 
-多次元配列にする場合はListにListを突っ込むのもあり
-```
+```csharp
+// 多次元配列にする場合はListにListを突っ込むのもあり
 var list = new List<List<string>> { new List<string>{"hoge1"} };
 ```
 
-Listはプリミティブな型でなく、クラスも格納できる
-```
+```csharp
+// Listはプリミティブな型でなく、クラスも格納できる
 public class Hoge
 {
     .....
@@ -70,7 +71,7 @@ foreachのチョー便利版と考えたらいいです。
 例えば、身長170センチ以上の人だけおいで！っていう場合
 foreachで書くのと、Linqで書くのではこうも違う
 
-```
+```csharp
 // 前提となるHumanクラス
 public class Human
 {
@@ -90,7 +91,7 @@ public class Human
 ```
 
 // foreachで書く場合
-```
+```csharp
 // Human100人をListに詰めてると思ってください。
 var humanList = new List<Human> .......
 
@@ -107,7 +108,7 @@ foreach (var human in humanList)
 ```
 
 // Linqで書く場合
-```
+```csharp
 using System.Linq;
 
 // Human100人をListに詰めてると思ってください。
@@ -132,7 +133,7 @@ https://qiita.com/tutinoco/items/6952b01e5fc38914ec4e
 使うときに常に三角形の面積の計算式を思い浮かべながら面積を計算したくない！とおもいません？(別にそんくらい簡単やんけと思われるかもしれないですが笑)  
 カプセル化してないコードとしてるコードではこう違います。(カプセル化してると見せかけて全くしてないコードも載せときます)  
 
-```
+```csharp
 // ただの三角形クラスをつくる(オブジェクト指向全くできてない)
 public class Triangle
 {
@@ -156,7 +157,7 @@ public static void Main()
 }
 ```
 
-```
+```csharp
 // オブジェクト指向ができてると見せかけてできていないクラス設計
 public class Triangle
 {
@@ -176,7 +177,7 @@ public static void Main()
 }
 ```
 
-```
+```csharp
 // オブジェクト指向ができてるクラス設計
 public class Triangle
 {
@@ -214,14 +215,14 @@ public static void Main()
 それらの面積計算は各クラスに独自計算させればいいですが(カプセル化)、それらすべての面積をまとめて計算したい場合どうすればいいでしょうか。  
 以下のようなコードを書きますか？
 
-```
+```csharp
 public double CalcAll(IEnumerable<Triangle> triangles, IEnumerable<Square> squares, IEnumerable<Circle> circles)
 {
     return triangles.Sum(triangle => triangle.CalcArea()) + squares.Sum(square => square.CalcArea()) + circles.Sum(circle => circle.CalcArea());
 }
 ```
 
-```
+```csharp
 public double CalcAll(IEnumerable<double> areas)
 {
     return areas.Sum(x => x);
@@ -241,7 +242,7 @@ IShapeというinterfaceを作ってCalcAreaという計算式のみ定義しま
 interfaceとは、取扱説明書のようなものです。IShapeというものは、面積をもってますよ！ということをただ宣言しているだけです。  
 それがとても重要で、interfaceを継承するクラスは **そこに書かれているメソッド、プロパティは必ず実装しなければならない** というルールがあります。
 
-```
+```csharp
 public interface IShape
 {
     double CalcArea();
@@ -278,7 +279,7 @@ public class Circle : IShape
 という状況になりました。  
 具体的にコードを書いてみると、
 
-```
+```csharp
 public double CalcAll(IEnumerable<IShape> shapes)
 {
     // shapeはCalcAreaのみもってる。それ以外のプロパティにはアクセスできない。
