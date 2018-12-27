@@ -1,6 +1,6 @@
 # 下準備
 1. ソリューションはVisualC#のコンソールアプリ(.NETFramework)を選択する  
-![コンソール](console.png)
+![コンソール](console.PNG)
 1. 以下はcsvを読み込むコードなので、初めのMain関数を丸々置き換えてください。
 ```
 public class Program
@@ -72,5 +72,5 @@ public class ParsedArgs
 }
 ```
 3. 読み込むcsvは"shapes.csv"で以下のようにパスを指定する  
-![](slnprop.png)  
-![](debug.png)
+![](slnprop.PNG)  
+![](debug.PNG)
