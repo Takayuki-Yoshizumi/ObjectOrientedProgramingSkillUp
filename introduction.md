@@ -21,7 +21,7 @@ public class Human
 }
 
 // 別ファイルのMain関数
-public static Main()
+public static void Main()
 {
     // C#でのインスタンス宣言はnew キーワードを使う
     var A君 = new Human("A君");
@@ -55,7 +55,7 @@ public class Hoge
     .....
 }
 
-public static Main()
+public static void Main()
 {
     var list = new List<Hoge>{ new Hoge() };
 }
@@ -121,6 +121,62 @@ var overHumanList = humanList.Where(human => human.Height >= 170);
 シンプルなことは明らか。  
 参考に示してるサイトにLinq一覧が載っているので性質はよく理解しておこう  
 
+## Linqの遅延評価
+Linqには遅延評価というものがある。  
+一件以下は都度returnを返し、その結果を見ているものと思われがちである。  
+
+```csharp
+var square = AList.Where(x => x > 0).Select(x => x * x);
+```
+
+しかし、squareはその場で評価されているわけではなく、実際に使われるときにはじめて評価される
+
+```csharp
+var square = AList.Where(x => x > 0).Select(x => x * x);
+
+// ここで初めてsquareは評価される
+foreach(var item in square)
+{
+    ・・・・
+}
+```
+
+以下の場合、評価のタイミングによってかかる時間が顕著に変わる
+
+```
+// 一回呼ばれると1秒かかる処理
+private static int Return(int n)
+{
+    Thread.Sleep(1000);
+    return n;
+}
+
+
+static void Main(string[] args)
+{
+    //Returnメソッドを3回遅延評価
+    var squares = Enumerable.Range(1, 3)
+                            .Select(x => Return(x));
+
+    // 以下で実行する際都度評価するので、合計6秒かかる
+    foreach (var square in squares);
+    foreach (var square in squares);
+
+    //Returnメソッドを3回遅延評価。この時点で評価しているので生成するのに3秒かかる
+    var squaresList = Enumerable.Range(1, 3)
+                            .Select(x => Return(x))
+                            .ToList();
+
+    // 実行時は高速なので、秒数がかからない。よって上記の3秒のみかかる
+    foreach (var square in squaresList);
+    foreach (var square in squaresList);
+}
+```
+
+よって、重い処理が含まれるクエリをforeachで何度も回したりすると、実行時に時間がかかる可能性がある  
+メリットデメリットは以下によくまとまってるので、要確認。  
+http://oxamarin.com/linq-lazy-evaluation/
+
 # オブジェクト指向の思想
 このQiita記事をよく読むとわかりやすい。  
 少し長いですが。  
@@ -153,7 +209,7 @@ public static void Main()
     var triangle = new Triangle(3, 4);
     
     // 面積計算するとき。毎回計算するのめんどくせー
-    var area = triangle.Bottom * triangle.Height / 2;
+    var area = triangle.Bottom * triangle.Height / 2d;
 }
 ```
 
@@ -163,7 +219,7 @@ public class Triangle
 {
     public double ClacArea(double bottom, double height)
     {
-        return bottom * height / 2;
+        return bottom * height / 2d;
     }
 }
 
@@ -192,7 +248,7 @@ public class Triangle
     
     public double ClacArea()
     {
-        return this.Bottom * this.Height / 2;
+        return this.Bottom * this.Height / 2d;
     }
 }
 
@@ -252,7 +308,7 @@ public class Triangle : IShape
 {
     public double CalcArea()
     {
-        return 底辺 * 高さ / 2;
+        return 底辺 * 高さ / 2d;
     }
 }
 
@@ -284,6 +340,27 @@ public double CalcAll(IEnumerable<IShape> shapes)
 {
     // shapeはCalcAreaのみもってる。それ以外のプロパティ、メソッドにはアクセスできない。
     return shapes.Sum(shape => shape.CalcArea());
+
+    /*
+        上の式は内部的に以下を行ってくれているのと一緒である(Triangle,Square,Circleしか現時点で継承していない場合)
+        var sum = 0d;
+        foreach (var shape in shapes)
+        {
+            if (shape is Triangle triangle)
+            {
+                sum += triangle.CalcArea();
+            }
+            else if (shape is Square square)
+            {
+                sum += square.CalcArea();
+            }
+            else if (shape is Circle circle)
+            {
+                sum += circle.CalcArea();
+            }
+        }
+        return sum;
+    */
 }
  
 var list = new List<IShape>();
