@@ -4,7 +4,7 @@
 1. 以下はcsvを読み込むコードなので、初めのMain関数を丸々置き換えてください。
 ```
 public class Program
-{gsdfgsdfgsdfgsdfgsdfg
+{
     static void Main(string[] args)
     {
         var fileName = args[0];
